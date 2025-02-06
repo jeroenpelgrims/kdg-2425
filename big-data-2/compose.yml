@@ -1,0 +1,25 @@
+services:
+  kafka:
+    image: apache/kafka-native:3.9.0
+    ports:
+      - 9092:9092
+    # volumes:
+    #   - ./docker/kafka:/opt/kafka/data
+    network_mode: host
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://localhost:9092,CONTROLLER://localhost:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+
+  akhq:
+    image: tchiotludo/akhq:0.25.1
+    network_mode: host
+    ports:
+      - 8080:8080
+    volumes:
+      - ./application.yml:/app/application.yml
+    depends_on:
+      - kafka
